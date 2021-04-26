@@ -3,5 +3,6 @@
 PROBLEM.md
 bad_people_lists.csv
 *.html
+*.json
 
 venv
