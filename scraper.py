@@ -196,7 +196,7 @@ class Scraper:
         sourceCode: str,
         requestDelay: Optional[int] = None,
         outputFile: Optional[str] = None,
-    ) -> Dict[str, str]:
+    ):
         """Alternative constructor to instantiate Scraper object from
         bad_people_lists.csv file
 

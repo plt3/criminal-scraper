@@ -22,6 +22,21 @@ Requirements: Python 3.6+, pip
 ```python
 from scraper import Scraper
 
-scraperObj = Scraper.fromCsv("bad_people_lists.csv", "UK_MWL", requestDelay=10, outputFile="/path/to/file.json")
+scraperObj = Scraper.fromCsv(
+    "bad_people_lists.csv",
+    "UK_MWL",
+    requestDelay=10,
+    outputFile="/path/to/file.json",
+)
 scraperObj.scrapeAllPersons()
 ```
+
+## Elasticsearch:
+
+- Must first run an Elasticsearch Docker container locally
+  - Can do so with `docker run -d -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.12.1`
+- Then, run `python3 loadElasticsearch.py` once Docker container is running to load all data in UK_MWL_persons.json into Elasticsearch index
+- Can run `./fullnameQuery.sh` (may have to make file executable first) to query local Elasticsearch instance with criminal data loaded in an index called "uk_most_wanted"
+- Check MooganQuery.json and MooganQuery.png (below) files to see the results of running fullnameQuery.sh
+
+![Elasticsearch query results](MooganQuery.png)

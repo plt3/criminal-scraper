@@ -4,5 +4,6 @@ PROBLEM.md
 *.html
 *.json
 !UK_MWL_persons.json
+!MooganQuery.json
 
 venv
