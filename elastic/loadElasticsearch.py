@@ -12,7 +12,8 @@ connection = Elasticsearch(LOCAL_URL)
 with open("UK_MWL_persons.json") as f:
     jsonData = json.load(f)
 
-for dataInd, data in enumerate(jsonData["persons"]):
-    connection.index(index=INDEX_NAME, id=dataInd + 1, body=data)
+# loop through jsonData["persons"] array and load Elasticsearch index with data
+for dataInd, data in enumerate(jsonData["persons"], 1):
+    connection.index(index=INDEX_NAME, id=dataInd, body=data)
 
 connection.close()

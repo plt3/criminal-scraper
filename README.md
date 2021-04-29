@@ -15,6 +15,7 @@ Requirements: Python 3.6+, pip
 ## Usage:
 
 - In project home directory, run scraper with `python3 runScraper.py`
+  - Note: the file itself is very short. The main scraper logic is in `scraper.py`
 - If source code is not changed, this will write data to `UK_MWL_persons.json` in project home directory (although the file is already included in this repository anyways)
 - Can override many defaults (output JSON file path, HTTP request delay) by passing extra arguments to either of the scraper's constructors. See Scraper class's source code for more information.
 - Example of overriding output file path and HTTP request delay:
@@ -35,8 +36,8 @@ scraperObj.scrapeAllPersons()
 
 - Must first run an Elasticsearch Docker container locally
   - Can do so with `docker run -d -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.12.1`
-- Then, run `python3 loadElasticsearch.py` once Docker container is running to load all data in UK_MWL_persons.json into Elasticsearch index
-- Can run `./fullnameQuery.sh` (may have to make file executable first) to query local Elasticsearch instance with criminal data loaded in an index called "uk_most_wanted"
-- Check MooganQuery.json and MooganQuery.png (below) files to see the results of running fullnameQuery.sh
+- Then, run `python3 elastic/loadElasticsearch.py` once Docker container is running to load all data in UK_MWL_persons.json into Elasticsearch index
+- Can run `elastic/fullnameQuery.sh` (may have to make file executable first) to query local Elasticsearch instance with criminal data loaded in an index called "uk_most_wanted"
+- Check elastic/MooganQuery.json and elastic/MooganQuery.png (below) files to see the results of running fullnameQuery.sh
 
-![Elasticsearch query results](MooganQuery.png)
+![Elasticsearch query results](elastic/MooganQuery.png)
