@@ -1,8 +1,8 @@
 .DS_Store
 
 PROBLEM.md
-bad_people_lists.csv
 *.html
 *.json
+!UK_MWL_persons.json
 
 venv
