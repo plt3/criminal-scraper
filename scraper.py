@@ -8,7 +8,9 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 
+# how long to wait between HTTP requests by default (in seconds)
 REQUEST_DELAY = 2
+# lxml is slightly faster than the default HTML parser
 HTML_PARSER = "lxml"
 
 
@@ -51,6 +53,8 @@ class Scraper:
 
         self.htmlParser = HTML_PARSER
 
+        # main data structure that will be filled with scraper data and then written to
+        # the JSON output file
         self.personsDict = {
             "source_code": self.sourceCode,
             "source_name": self.sourceName,
@@ -72,6 +76,7 @@ class Scraper:
 
         """
         page = requests.get(url)
+        # check that server returns < 400 response code
         page.raise_for_status()
 
         soupObject = BeautifulSoup(page.text, self.htmlParser)
@@ -85,10 +90,14 @@ class Scraper:
 
         """
         soupObj = self.prepareBeautifulSoup(self.sourceUrl)
+
+        # select div holding list of all criminals and parse out anchor tags
         resultsContainer = soupObj.select_one("dl.search-results")
         personBoxes = resultsContainer.select("div.span4")
         personAnchors = [box.find("a") for box in personBoxes]
 
+        # anchor tags have relative paths to other pages, so add the beginning of the
+        # URL to each link for future convenience
         pageUrlParse = urlparse(self.sourceUrl)
         pageDomain = f"{pageUrlParse.scheme}://{pageUrlParse.netloc}"
 
@@ -108,15 +117,21 @@ class Scraper:
         columnDict = {}
         infoSpans = columnSoupObj.find_all("span")
 
+        # iterate through pairs of span tags on page because each key span tag is
+        # followed by its corresponding value span tag
         for infoIndex in range(0, len(infoSpans), 2):
             infoKeyText = infoSpans[infoIndex].get_text()
+            # clean up text and replace spaces with underscores in keys
             infoKey = infoKeyText.strip(": ").lower().replace(" ", "_")
 
             try:
+                # find corresponding value to current key
                 infoValue = infoSpans[infoIndex + 1].get_text().strip()
 
                 columnDict[infoKey] = infoValue
             except IndexError:
+                # in case some column has an odd number of span tags for some reason
+                # (meaning that a key would have no corresponding value)
                 self.logger.info(
                     f"No matching value for {infoKey} at {pageUrl}, skipping"
                 )
@@ -136,14 +151,18 @@ class Scraper:
         infoContainer = soupObj.select_one("div.item-page.most-wanted-grid")
 
         nameHeader = infoContainer.select_one('h2[itemprop="headline"]')
+        # get criminal's full name and split it into first name(s) and last name,
+        # supporting both 2-word names and 3+ word names
         fullName = nameHeader.get_text().strip()
         lastSpaceInd = fullName.rindex(" ")
         infoDict["firstname"] = fullName[:lastSpaceInd].strip()
         infoDict["lastname"] = fullName[lastSpaceInd:].strip()
 
+        # retrieve general summary of crime
         summaryContainer = infoContainer.select_one('div[itemprop="articleBody"]')
         infoDict["general"] = summaryContainer.get_text().strip()
 
+        # 3 CSS selectors for the individual columns holding extra information
         selectors = {
             "crime": "div.most-wanted-basic",
             "about": "div.most-wanted-description",
@@ -154,6 +173,8 @@ class Scraper:
             columnContainer = infoContainer.select_one(selector)
             infoDict[key] = self.getColumnInfo(columnContainer, pageUrl)
 
+        # append dictionary containing criminal's data to "persons" array in final JSON
+        # object
         self.personsDict["persons"].append(infoDict)
 
     def scrapeAllPersons(self, writeToFile: Optional[bool] = True):
@@ -168,19 +189,23 @@ class Scraper:
         """
         self.logger.info(f"Beginning scrape using {self.sourceUrl} as main page")
 
+        # retrieve all individual links to follow
         individualLinks = self.getDetailPageLinks()
 
         self.logger.info(
             f"Retrieved {len(individualLinks)} individual links from {self.sourceUrl}"
         )
 
+        # loop through all individual links to get more information about each person
         for link in individualLinks:
+            # pause in between requests to respect the server
             time.sleep(self.requestDelay)
 
             self.logger.info(f"Scraping {link}")
 
             self.getIndividualDetails(link)
 
+        # write JSON data to file by default, can be overridden by user
         if writeToFile:
             with open(self.outputFile, "w") as f:
                 json.dump(self.personsDict, f, indent=4)
@@ -213,6 +238,8 @@ class Scraper:
         fileHandle = open(filePath)
         csvReader = csv.DictReader(fileHandle, skipinitialspace=True)
 
+        # loop through CSV file until row with correct source code is found, then
+        # construct Scraper object from the information in that row
         for line in csvReader:
             if line["source_code"] == sourceCode:
                 sourceName = line["source_name"]

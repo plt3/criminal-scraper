@@ -38,6 +38,6 @@ scraperObj.scrapeAllPersons()
   - Can do so with `docker run -d -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.12.1`
 - Then, run `python3 elastic/loadElasticsearch.py` once Docker container is running to load all data in UK_MWL_persons.json into Elasticsearch index
 - Can run `elastic/fullnameQuery.sh` (may have to make file executable first) to query local Elasticsearch instance with criminal data loaded in an index called "uk_most_wanted"
-- Check elastic/MooganQuery.json and elastic/MooganQuery.png (below) files to see the results of running fullnameQuery.sh
+- Check `elastic/MooganQuery.json` and `elastic/MooganQuery.png` (below) files to see the results of running fullnameQuery.sh
 
 ![Elasticsearch query results](elastic/MooganQuery.png)
