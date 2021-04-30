@@ -15,5 +15,6 @@ with open("UK_MWL_persons.json") as f:
 # loop through jsonData["persons"] array and load Elasticsearch index with data
 for dataInd, data in enumerate(jsonData["persons"], 1):
     connection.index(index=INDEX_NAME, id=dataInd, body=data)
+    print(f"Inserted document {dataInd} into Elasticsearch index")
 
 connection.close()

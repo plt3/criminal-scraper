@@ -9,7 +9,7 @@ Requirements: Python 3.6+, pip
 
 - Clone repo with `git clone https://github.com/plt3/criminal-scraper`
 - Navigate to project directory with `cd criminal-scraper`
- Recommended: create virtual environment: `python3 -m venv venv` and activate it: `source venv/bin/activate`
+- Recommended: create virtual environment: `python3 -m venv venv` and activate it: `source venv/bin/activate`
 - Install dependencies with `pip install -r requirements.txt`
 
 ## Usage:
@@ -36,7 +36,7 @@ scraperObj.scrapeAllPersons()
 
 - Must first run an Elasticsearch Docker container locally
   - Can do so with `docker run -d -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.12.1`
-- Then, run `python3 elastic/loadElasticsearch.py` once Docker container is running to load all data in UK_MWL_persons.json into Elasticsearch index
+- Once Elasticsearch is ready, run `python3 elastic/loadElasticsearch.py` to load all data in UK_MWL_persons.json into Elasticsearch index
 - Can run `elastic/fullnameQuery.sh` (may have to make file executable first) to query local Elasticsearch instance with criminal data loaded in an index called "uk_most_wanted"
 - Check `elastic/MooganQuery.json` and `elastic/MooganQuery.png` (below) files to see the results of running fullnameQuery.sh
 
